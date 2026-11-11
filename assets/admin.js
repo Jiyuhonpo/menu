@@ -47,10 +47,26 @@ document.addEventListener('DOMContentLoaded', () => {
       number.className = 'number';
       number.textContent = '料理 ' + (idx + 1);
 
-      const input = document.createElement('input');
-      input.type = 'text';
-      input.value = name;
-      input.maxLength = 200;
+   
+const input = document.createElement('textarea');
+
+input.value = name;
+input.maxLength = 200;
+input.rows = 2;
+
+input.placeholder = '料理名を入力してください';
+
+input.style.width = '100%';
+input.style.minHeight = '90px';
+input.style.padding = '13px 12px';
+input.style.border = '1px solid #d8d8d2';
+input.style.borderRadius = '9px';
+input.style.fontSize = '16px';
+input.style.lineHeight = '1.8';
+input.style.resize = 'vertical';
+input.style.fontFamily = 'inherit';
+input.style.boxSizing = 'border-box';
+
 
       input.setAttribute(
         'aria-label',
@@ -212,7 +228,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     render();
 
-    const inputs = editor.querySelectorAll('input');
+    const inputs = editor.querySelectorAll('textarea');
 
     inputs[inputs.length - 1]?.focus();
   });
