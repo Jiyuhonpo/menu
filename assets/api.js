@@ -3,25 +3,26 @@
 
 window.MenuApi = (() => {
 
+  // GASの接続先
   function endpoint() {
-    const raw = (
-      window.MENU_CONFIG &&
-      window.MENU_CONFIG.apiUrl || ''
+    const url = String(
+      window.MENU_CONFIG?.apiUrl || ''
     ).trim();
 
-    if (!/^https:\/\/script\.google\.com\/macros\/s\/[A-Za-z0-9_-]+\/exec$/.test(raw)) {
+    if (
+      !/^https:\/\/script\.google\.com\/macros\/s\/[A-Za-z0-9_-]+\/exec$/.test(url)
+    ) {
       throw new Error(
-        'config.js の Apps Script URL を設定してください。'
+        'config.js の Apps Script URL を確認してください。'
       );
     }
 
-    return raw;
+    return url;
   }
 
-  // 公開される料理名を取得
+  // メニューデータの取得（JSONP）
   function read() {
     return new Promise((resolve, reject) => {
-      let finished = false;
 
       const callback =
         '__menuReply_' +
@@ -29,12 +30,13 @@ window.MenuApi = (() => {
 
       const script = document.createElement('script');
 
-      const timer = setTimeout(
-        () => done(new Error('通信がタイムアウトしました。')),
-        16000
-      );
+      let finished = false;
 
-      function done(error, data) {
+      const timer = setTimeout(() => {
+        finish(new Error('読み込みがタイムアウトしました。'));
+      }, 20000);
+
+      function finish(error, data) {
         if (finished) return;
 
         finished = true;
@@ -50,26 +52,110 @@ window.MenuApi = (() => {
         }
       }
 
-      window[callback] = data => done(null, data);
+      window[callback] = data => {
+        finish(null, data);
+      };
 
-      script.onerror = () => done(
-        new Error('メニューを読み込めませんでした。')
-      );
+      script.onerror = () => {
+        finish(
+          new Error('メニューの取得に失敗しました。')
+        );
+      };
 
       try {
-        script.src = endpoint()
-          + '?action=menu&callback='
-          + encodeURIComponent(callback)
-          + '&_=' + Date.now();
+        script.src =
+          endpoint() +
+          '?action=menu' +
+          '&callback=' +
+          encodeURIComponent(callback) +
+          '&_=' + Date.now();
 
         document.head.appendChild(script);
+
       } catch (error) {
-        done(error);
+        finish(error);
       }
     });
   }
 
-  // 管理画面の変更を保存
+  // GASへフォーム形式でPOST送信
+  function postForm(payload) {
+    return new Promise((resolve, reject) => {
+
+      const id =
+        'menu_post_' +
+        Date.now() + '_' +
+        Math.random().toString(36).slice(2);
+
+      const frame = document.createElement('iframe');
+
+      frame.name = id;
+      frame.style.display = 'none';
+      frame.setAttribute('aria-hidden', 'true');
+
+      const form = document.createElement('form');
+
+      form.method = 'POST';
+      form.action = endpoint();
+      form.target = id;
+      form.style.display = 'none';
+      form.acceptCharset = 'UTF-8';
+
+      Object.entries(payload).forEach(([key, value]) => {
+
+        const input = document.createElement('input');
+
+        input.type = 'hidden';
+        input.name = key;
+        input.value = String(value);
+
+        form.appendChild(input);
+      });
+
+      document.body.appendChild(frame);
+      document.body.appendChild(form);
+
+      try {
+        // ブラウザの通常フォーム送信で
+        // GASのdoPostを呼び出す
+        form.submit();
+        resolve();
+
+      } catch (error) {
+        reject(error);
+
+      } finally {
+        // 通信中のフレームは保存確認後まで保持
+        window.__menuPostFrames =
+          window.__menuPostFrames || [];
+
+        window.__menuPostFrames.push({
+          form,
+          frame
+        });
+      }
+    });
+  }
+
+  // フォームを削除
+  function cleanupForms() {
+    const entries = window.__menuPostFrames || [];
+
+    entries.forEach(({ form, frame }) => {
+      form.remove();
+      frame.remove();
+    });
+
+    window.__menuPostFrames = [];
+  }
+
+  function sleep(ms) {
+    return new Promise(resolve => {
+      setTimeout(resolve, ms);
+    });
+  }
+
+  // 保存処理
   async function save(
     password,
     previousRevision,
@@ -77,60 +163,66 @@ window.MenuApi = (() => {
     nextRevision
   ) {
 
-    const body = new URLSearchParams({
+    const payload = {
       action: 'save',
-      password,
-      previousRevision,
-      nextRevision,
+      password: password,
+      previousRevision: previousRevision,
+      nextRevision: nextRevision,
       dishes: JSON.stringify(dishes)
-    });
+    };
 
-    await fetch(endpoint(), {
-      method: 'POST',
-      mode: 'no-cors',
-      credentials: 'omit',
-      body,
-      redirect: 'follow',
-      cache: 'no-store'
-    });
+    try {
+      await postForm(payload);
 
-    // 保存後、公開データを取得して確認
-    for (let attempt = 0; attempt < 7; attempt++) {
+      // GAS側の処理完了を待ちながら
+      // 更新番号を確認する
+      for (let i = 0; i < 12; i++) {
 
-      await new Promise(resolve =>
-        setTimeout(resolve, 650 + attempt * 350)
+        await sleep(900 + i * 150);
+
+        let data;
+
+        try {
+          data = await read();
+        } catch (error) {
+          continue;
+        }
+
+        if (!data || !data.ok) {
+          continue;
+        }
+
+        // 保存が正常に反映された
+        if (data.revision === nextRevision) {
+          return data;
+        }
+
+        // 別の更新が反映された
+        if (
+          data.revision !== previousRevision &&
+          data.revision !== nextRevision
+        ) {
+          throw new Error(
+            '別の更新が反映されています。' +
+            '最新のメニューを再読み込みしてください。'
+          );
+        }
+      }
+
+      throw new Error(
+        '保存を確認できませんでした。' +
+        'GASの実行履歴でdoPostを確認してください。'
       );
 
-      const data = await read();
-
-      if (
-        data &&
-        data.revision === nextRevision
-      ) {
-        return data;
-      }
-
-      if (
-        data &&
-        data.revision !== previousRevision
-      ) {
-        throw new Error(
-          '別の更新が反映されています。' +
-          '最新を再読み込みしてください。'
-        );
-      }
+    } finally {
+      cleanupForms();
     }
-
-    throw new Error(
-      '保存が確認できませんでした。' +
-      'パスワード・接続先・Apps Scriptの実行履歴を確認してください。'
-    );
   }
 
   return {
+    endpoint,
     read,
-    save,
-    endpoint
+    save
   };
 
 })();
