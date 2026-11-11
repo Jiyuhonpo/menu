@@ -1,0 +1,312 @@
+
+:root {
+  color-scheme: light;
+  --paper: #faf9f6;
+  --ink: #2e302e;
+  --muted: #8b8880;
+  --line: #d7d1c9;
+  --accent: #6c7366;
+  --surface: #fff;
+  --shadow: 0 12px 48px rgba(35,32,29,.055);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  font-synthesis: none;
+}
+
+body {
+  margin: 0;
+  color: var(--ink);
+  background: var(--paper);
+  font-family:
+    'Hiragino Mincho ProN',
+    'Yu Mincho',
+    'Noto Serif JP',
+    serif;
+}
+
+button,
+input {
+  font: inherit;
+}
+
+/* お客様用メニュー */
+
+.menu-page {
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: clamp(55px,10vh,95px) 24px 40px;
+}
+
+.brand {
+  font-size: 14px;
+  letter-spacing: .13em;
+  line-height: 1.8;
+}
+
+.hero-title {
+  font-size: 32px;
+  font-weight: 400;
+  letter-spacing: .19em;
+  margin: 30px 0 0;
+  padding-left: .19em;
+}
+
+.rule {
+  width: 44px;
+  height: 1px;
+  background: #a99f95;
+  margin: 30px auto 48px;
+}
+
+.course-list {
+  list-style: none;
+  padding: 0;
+  margin: 0 auto 65px;
+  width: min(100%,640px);
+  display: flex;
+  flex-direction: column;
+  gap: 36px;
+}
+
+.course-list li {
+  font-size: clamp(15px,2vw,17px);
+  line-height: 2;
+  letter-spacing: .055em;
+  overflow-wrap: anywhere;
+  white-space: pre-line;
+}
+
+.page-footer {
+  margin-top: auto;
+  color: var(--muted);
+  font-size: 10px;
+  letter-spacing: .14em;
+}
+
+.notice {
+  color: #786b57;
+  font: 13px/1.8
+    -apple-system,
+    BlinkMacSystemFont,
+    'Hiragino Kaku Gothic ProN',
+    sans-serif;
+  margin: 12px auto 22px;
+  max-width: 560px;
+}
+
+.error {
+  color: #a34242;
+}
+
+/* 管理者用 */
+
+.admin-body {
+  background: #f5f4f1;
+  font-family:
+    -apple-system,
+    BlinkMacSystemFont,
+    'Hiragino Kaku Gothic ProN',
+    'Yu Gothic',
+    sans-serif;
+}
+
+.admin-shell {
+  max-width: 740px;
+  margin: auto;
+  padding: 26px 16px 90px;
+}
+
+.admin-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.eyebrow {
+  color: #777a71;
+  font-size: 11px;
+  letter-spacing: .15em;
+}
+
+.admin-heading {
+  margin: 5px 0;
+  font-size: 24px;
+  letter-spacing: .04em;
+  font-weight: 650;
+}
+
+.admin-header a {
+  font-size: 13px;
+  color: #505b4a;
+}
+
+.panel {
+  background: var(--surface);
+  border: 1px solid #ebe8e1;
+  border-radius: 15px;
+  padding: 22px;
+  box-shadow: var(--shadow);
+  margin-bottom: 16px;
+}
+
+.panel h2 {
+  font-size: 17px;
+  margin: 0 0 13px;
+}
+
+.muted {
+  color: #797c76;
+  font-size: 13px;
+  line-height: 1.7;
+}
+
+.field-label {
+  display: block;
+  font-size: 13px;
+  font-weight: 650;
+  margin: 14px 0 7px;
+}
+
+input[type=password],
+input[type=text] {
+  width: 100%;
+  min-width: 0;
+  border: 1px solid #d8d8d2;
+  border-radius: 9px;
+  background: white;
+  padding: 13px 12px;
+  color: #222;
+  font-size: 16px;
+  outline-offset: 2px;
+}
+
+.btn {
+  appearance: none;
+  border: none;
+  border-radius: 9px;
+  background: #46554a;
+  color: white;
+  min-height: 44px;
+  padding: 12px 17px;
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.btn.secondary {
+  background: #e9eee9;
+  color: #344b3b;
+}
+
+.btn.ghost {
+  background: white;
+  border: 1px solid #d7dad3;
+  color: #46554a;
+}
+
+.btn.danger {
+  background: #fff1ef;
+  color: #a33d3d;
+}
+
+.btn:disabled {
+  opacity: .5;
+  cursor: not-allowed;
+}
+
+.btn-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 20px;
+}
+
+.dish-card {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  gap: 9px;
+  border: 1px solid #e4e3dd;
+  background: #fff;
+  border-radius: 12px;
+  padding: 12px;
+  margin: 9px 0;
+}
+
+.dish-card .number {
+  font-size: 11px;
+  color: #8b8b85;
+  display: block;
+  margin-bottom: 6px;
+}
+
+.dish-card .controls {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.icon-btn {
+  width: 38px;
+  height: 36px;
+  border: 1px solid #d9ddd6;
+  background: #f8faf8;
+  border-radius: 8px;
+  font-size: 17px;
+  cursor: pointer;
+}
+
+.icon-btn:disabled {
+  opacity: .3;
+}
+
+.status {
+  font-size: 13px;
+  line-height: 1.7;
+  padding: 12px;
+  border-radius: 9px;
+  background: #f1f2ed;
+  margin-top: 16px;
+}
+
+.status.error {
+  background: #ffefeb;
+}
+
+.status.success {
+  background: #e9f3e8;
+  color: #295d36;
+}
+
+[hidden] {
+  display: none !important;
+}
+
+@media (max-width: 400px) {
+  .admin-shell {
+    padding: 18px 12px 70px;
+  }
+
+  .panel {
+    padding: 16px;
+  }
+
+  .dish-card {
+    padding: 8px;
+  }
+
+  .icon-btn {
+    width: 34px;
+  }
+}
