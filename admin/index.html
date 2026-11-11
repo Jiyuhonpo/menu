@@ -1,0 +1,120 @@
+
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1">
+
+  <meta name="robots" content="noindex,nofollow">
+  <meta name="theme-color" content="#f5f4f1">
+
+  <title>メニュー管理 | 赤坂リストランテ自由奔放</title>
+
+  <link rel="stylesheet" href="../assets/style.css">
+
+  <script defer src="../config.js"></script>
+  <script defer src="../assets/api.js"></script>
+  <script defer src="../assets/admin.js"></script>
+</head>
+
+<body class="admin-body">
+
+  <main class="admin-shell">
+
+    <header class="admin-header">
+      <div>
+        <div class="eyebrow">
+          RISTORANTE JIYUHONPO
+        </div>
+
+        <h1 class="admin-heading">
+          コースメニュー管理
+        </h1>
+      </div>
+
+      <a href="../"
+         target="_blank"
+         rel="noopener noreferrer">
+        公開画面を見る ↗
+      </a>
+    </header>
+
+    <section class="panel" id="login-panel">
+
+      <h2>管理用パスワード</h2>
+
+      <p class="muted">
+        料理の読み込みはパスワードなしでできます。
+        変更を保存するときだけ、管理パスワードが必要です。
+        パスワードはブラウザ内に保存しません。
+      </p>
+
+      <label for="password" class="field-label">
+        管理パスワード
+      </label>
+
+      <input
+        id="password"
+        type="password"
+        autocomplete="off"
+        placeholder="管理パスワード"
+      >
+
+      <div class="btn-row">
+        <button
+          class="btn"
+          id="load-btn"
+          type="button">
+          メニューを読み込む
+        </button>
+      </div>
+
+    </section>
+
+    <section class="panel" id="editor-panel" hidden>
+
+      <h2>料理名の編集</h2>
+
+      <p class="muted">
+        料理名を編集し、↑ ↓ で順序を変更してください。
+        「保存」を押すまでは公開画面に反映されません。
+      </p>
+
+      <div id="dish-editor"></div>
+
+      <div class="btn-row">
+
+        <button
+          class="btn secondary"
+          id="add-btn"
+          type="button">
+          ＋ 料理を追加
+        </button>
+
+        <button
+          class="btn"
+          id="save-btn"
+          type="button">
+          変更を保存
+        </button>
+
+        <button
+          class="btn ghost"
+          id="reload-btn"
+          type="button">
+          最新を再読み込み
+        </button>
+
+      </div>
+    </section>
+
+    <div class="status" id="status" role="status">
+      接続設定が完了すると、
+      ここからメニューを編集できます。
+    </div>
+
+  </main>
+</body>
+</html>
